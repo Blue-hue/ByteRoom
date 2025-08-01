@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
+import Homepage from './Components/Homepage'
+import Editor from './Components/Editorpage'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      hehe
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/editor/:roomId" element={<Editor />} />
+      </Routes>
     </>
   )
 }

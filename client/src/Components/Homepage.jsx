@@ -1,0 +1,90 @@
+import React, { useState } from "react";
+import { v4 as uuid } from "uuid";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+function Homepage() {
+  const [roomId, setRoomId] = useState("");
+  const [username, setUsername] = useState("");
+
+  const navigate = useNavigate();
+
+  const generateRoomId = (e) => {
+    e.preventDefault();
+    const Id = uuid();
+    setRoomId(Id);
+    toast.success("Room ID generated");
+  };
+
+  const joinRoom = () => {
+    if (!roomId || !username) {
+      toast.error("Both fields are required");
+      return;
+    }
+
+    navigate(`/editor/${roomId}`, {
+      state: { username },
+    });
+    toast.success("Room joined successfully");
+  };
+
+  const handleInputEnter = (e) => {
+    if (e.code === "Enter") {
+      joinRoom();
+    }
+  };
+
+  return (
+    <div className="p-1 flex items-center justify-center bg-indigo-500 rounded-2xl">
+      <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
+        <div className="flex flex-col items-center text-center">
+          {/* <img
+            src="/images/codecast.png"
+            alt="Logo"
+            className="w-24 h-24 mb-4"
+          /> */}
+          <h4 className="text-2xl font-semibold text-white mb-6">
+            Enter the Room ID
+          </h4>
+        </div>
+
+        <div className="space-y-4">
+          <input
+            type="text"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+            placeholder="ROOM ID"
+            onKeyUp={handleInputEnter}
+            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="USERNAME"
+            onKeyUp={handleInputEnter}
+            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            onClick={joinRoom}
+            className="w-full py-2 bg-violet-800 hover:bg-violet-950 text-white font-semibold rounded-md transition-colors duration-300 focus:ring-1"
+          >
+            JOIN
+          </button>
+        </div>
+        
+        <p className="text-center text-gray-400 mt-4">
+          Don't have a Room ID?{" "}
+          <span 
+            onClick={generateRoomId}
+            className="text-blue-300 hover:text-blue-600 cursor-pointer hover:underline transition"
+          >
+            Create a new Room
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default Homepage;
