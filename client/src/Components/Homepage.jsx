@@ -35,7 +35,8 @@ function Homepage() {
   };
 
   return (
-    <div className="p-1 flex items-center justify-center bg-indigo-500 rounded-2xl">
+    <div className="flex items-center justify-center h-screen w-screen">
+      <div className="p-1 w-fit flex items-center justify-center bg-indigo-500 rounded-2xl">
       <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
         <div className="flex flex-col items-center text-center">
           {/* <img
@@ -67,7 +68,7 @@ function Homepage() {
           />
           <button
             onClick={joinRoom}
-            className="w-full py-2 bg-violet-800 hover:bg-violet-950 text-white font-semibold rounded-md transition-colors duration-300 focus:ring-1"
+            className="w-full py-2 bg-violet-800 hover:bg-violet-950 text-white font-semibold rounded-md transition-colors duration-300 hover:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-500"
           >
             JOIN
           </button>
@@ -77,13 +78,16 @@ function Homepage() {
           Don't have a Room ID?{" "}
           <span 
             onClick={generateRoomId}
-            className="text-blue-300 hover:text-blue-600 cursor-pointer hover:underline transition"
+            className="relative text-violet-300 hover:text-violet-600 cursor-pointer transition-all duration-300 group"
           >
             Create a new Room
+            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-violet-600 transform scale-x-0 transition-transform duration-300 ease-in-out origin-left group-hover:scale-x-100"></span>
           </span>
         </p>
       </div>
     </div>
+    </div>
+    
   );
 }
 
