@@ -11,10 +11,8 @@ function Editorpage() {
   ]) // Placeholder for user list
 
 
-
-
   const editorRef = useRef(null)
-  const [editorHeight, setEditorHeight] = useState(300) // initial height in px
+  const [editorHeight, setEditorHeight] = useState(null) // initial height in px
 
   const isDragging = useRef(false)
 
@@ -42,6 +40,9 @@ function Editorpage() {
       {/* Left Pane */}
 
       <div className="w-1/4 bg-black text-white flex flex-col overflow-auto items-center">
+
+        {/* image */}
+        <img src="/public/byteroom.png" />
 
         {/* user list */}
 
@@ -75,7 +76,7 @@ function Editorpage() {
       
         <div
           ref={editorRef}
-          className="bg-gray-800 text-white p-4 overflow-auto"
+          className="bg-gray-800 text-white p-4 overflow-auto h-3/5"
           style={{ height: `${editorHeight}px` }}
         >
           <Editor />
@@ -88,7 +89,7 @@ function Editorpage() {
         ></div>
 
         {/* I/O Pane */}
-        <div className="flex flex-grow overflow-hidden">
+        <div className="flex flex-grow overflow-hidden h-2/5">
           <div className="w-1/2 bg-gray-700 p-4 overflow-auto">Input</div>
           <div className="w-1/2 bg-gray-600 p-4 overflow-auto">Output</div>
         </div>
