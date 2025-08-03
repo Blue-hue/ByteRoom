@@ -1,15 +1,71 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Client from './Client'
 import Editor from './Editor'
+import { initSocket } from '../socket';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function Editorpage() {
 
-  const [clients, setClients] = useState([
-    {socketId: 1, username: 'User1'},
-    {socketId: 2, username: 'User2'},
-    {socketId: 3, username: 'Usyuyuuyyr3'}, 
-  ]) // Placeholder for user list
+  const socketRef = useRef(null) // Placeholder for socket connection
+  const location = useLocation();
+  const { roomId } = useParams(); // Get roomId from URL parameters
+  const navigate = useNavigate();
 
+  const [clients, setClients] = useState([]); // State to hold connected clients
+
+
+
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket();
+
+      const handleError = (err) => {
+        console.error('Socket connection error:', err);
+        toast.error('Socket connection failed. Please try again later.');
+        navigate('/');
+      }
+
+      socketRef.current.on('connect_error', (err) => handleError(err));
+      socketRef.current.on('connect_failed', (err) => handleError(err));
+
+
+      socketRef.current.emit('join', {
+        roomId,
+        username: location.state?.username
+      });
+
+      socketRef.current.on('user-joined', ({ clients, username, socketId }) => {
+        if( username !== location.state?.username) {
+          toast.success(`${username} joined the room`);
+        }
+        setClients(clients);
+      });
+
+      socketRef.current.on('user-disconnected', ({ socketId, username }) => {
+        toast.error(`${username} left the room`);
+        setClients((prevClients) => prevClients.filter(client => client.socketId !== socketId));
+      });
+
+    }
+
+    init();
+
+    return () => {
+      socketRef.current.disconnect();
+      socketRef.current.off('connect_error');
+      socketRef.current.off('connect_failed');
+      socketRef.current.off('user-joined');
+      socketRef.current.off('user-disconnected');
+    }
+
+  }, []);
+
+
+  if(!location.state || !location.state.username) {
+    toast.error("Username is required to join the room");
+    navigate('/');
+  }
 
   const editorRef = useRef(null)
   const [editorHeight, setEditorHeight] = useState(null) // initial height in px
