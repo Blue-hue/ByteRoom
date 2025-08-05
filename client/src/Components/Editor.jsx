@@ -11,9 +11,10 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/lib/codemirror.js";
 import CodeMirror from 'codemirror';
 
-function Editor() {
+function Editor({ socketRef, roomId }) {
 
     const editorRef = useRef(null);
+
     useEffect(() => {
         const init = async () => {
             const editor = CodeMirror.fromTextArea(
@@ -27,11 +28,45 @@ function Editor() {
                     autoCloseTags: true,
                 }
             )
+            editorRef.current = editor;
             editor.setSize(null, "100%");
+
+            editorRef.current.on('change', (instance, changeObj) => {
+                // Handle changes in the editor
+                // console.log('Editor content changed:', instance, changeObj); 
+                const {origin} = changeObj;
+                const code = instance.getValue();
+                if(origin !== 'setValue') {
+                    // Emit the change to the server or handle it as needed
+                    // console.log('Code changed:', code);
+
+                    socketRef.current.emit('code-changed', {
+                        roomId,
+                        code,
+                    });
+                }
+            });
+
         }
         init();
     }, [])
 
+    useEffect(() => {
+        if(socketRef.current) {
+            socketRef.current.on('code-changed', ({ code, username }) => {
+                // Update the editor content when code changes are received
+                if (code && editorRef.current) {
+                    // const editor = CodeMirror.fromTextArea(editorRef.current);
+                    editorRef.current.setValue(code);
+                }
+            });
+        }
+        return () => {
+            if(socketRef.current) {
+                socketRef.current.off('code-changed');
+            }
+        }
+    }, [socketRef.current]);
 
   return (
     <div className='h-full w-full'>

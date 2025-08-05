@@ -40,6 +40,9 @@ function Editorpage() {
           toast.success(`${username} joined the room`);
         }
         setClients(clients);
+        socketRef.current.emit('sync-code', {
+          
+        })
       });
 
       socketRef.current.on('user-disconnected', ({ socketId, username }) => {
@@ -98,7 +101,7 @@ function Editorpage() {
       <div className="w-1/4 bg-black text-white flex flex-col overflow-auto items-center">
 
         {/* image */}
-        <img src="/public/byteroom.png" />
+        <img src="/byteroom.png" />
 
         {/* user list */}
 
@@ -135,7 +138,7 @@ function Editorpage() {
           className="bg-gray-800 text-white p-4 overflow-auto h-3/5"
           style={{ height: `${editorHeight}px` }}
         >
-          <Editor />
+          <Editor socketRef={socketRef} roomId={roomId}/>
         </div>
 
         {/* Resizer line */}
