@@ -11,6 +11,7 @@ function Editorpage() {
   const location = useLocation();
   const { roomId } = useParams(); // Get roomId from URL parameters
   const navigate = useNavigate();
+  const codeRef = useRef(null); // Placeholder for code editor reference
 
   const [clients, setClients] = useState([]); // State to hold connected clients
 
@@ -41,8 +42,9 @@ function Editorpage() {
         }
         setClients(clients);
         socketRef.current.emit('sync-code', {
-          
-        })
+          code: codeRef.current,
+          socketId,
+        } )
       });
 
       socketRef.current.on('user-disconnected', ({ socketId, username }) => {
@@ -89,6 +91,21 @@ function Editorpage() {
     isDragging.current = false
   }
 
+  const copyRoomId = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success('Room ID copied to clipboard');
+    } catch (err) {
+      toast.error('Failed to copy Room ID');
+    }
+  }
+
+  const leave = () => {
+    socketRef.current.emit('leave', { roomId });
+    navigate('/');
+    toast.success('You have left the room');
+  }
+
   return (
     <div
       className="h-screen w-screen flex"
@@ -118,10 +135,10 @@ function Editorpage() {
 
         {/* Buttons of invite and leave room */}
 
-        <button className="bg-blue-500 text-white p-2 m-2 rounded-t-2xl hover:bg-blue-600 w-35">
+        <button className="bg-blue-500 text-white p-2 m-2 rounded-t-2xl hover:bg-blue-600 w-35" onClick={copyRoomId}>
           INVITE
         </button>
-        <button className="bg-red-500 text-white p-2 m-2 rounded-b-2xl hover:bg-red-600 w-35">
+        <button className="bg-red-500 text-white p-2 m-2 rounded-b-2xl hover:bg-red-600 w-35" onClick={leave}>
           LEAVE ROOM
         </button>
 
@@ -138,7 +155,7 @@ function Editorpage() {
           className="bg-gray-800 text-white p-4 overflow-auto h-3/5"
           style={{ height: `${editorHeight}px` }}
         >
-          <Editor socketRef={socketRef} roomId={roomId}/>
+          <Editor socketRef={socketRef} roomId={roomId} onCodeChange = {(code) => (codeRef.current = code) } />
         </div>
 
         {/* Resizer line */}

@@ -11,7 +11,7 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/lib/codemirror.js";
 import CodeMirror from 'codemirror';
 
-function Editor({ socketRef, roomId }) {
+function Editor({ socketRef, roomId, onCodeChange }) {
 
     const editorRef = useRef(null);
 
@@ -36,6 +36,7 @@ function Editor({ socketRef, roomId }) {
                 // console.log('Editor content changed:', instance, changeObj); 
                 const {origin} = changeObj;
                 const code = instance.getValue();
+                onCodeChange(code); // Call the parent function to update the code
                 if(origin !== 'setValue') {
                     // Emit the change to the server or handle it as needed
                     // console.log('Code changed:', code);
