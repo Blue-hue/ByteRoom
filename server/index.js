@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sync-code', ({ socketId, code }) => {
-        io.to(socketId).emit('sync-code', {
+        io.to(socketId).emit('code-changed', {
             code
         });
     });
