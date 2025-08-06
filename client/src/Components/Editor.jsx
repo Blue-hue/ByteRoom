@@ -29,7 +29,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
                 document.getElementById("realeditor"),
                 {
                     mode : getMode(language),
-                    theme: "dracula",
+                    theme: "material",
                     lineNumbers: true,
                     lineWrapping: true,
                     autoCloseBrackets: true,
