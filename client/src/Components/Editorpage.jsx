@@ -166,8 +166,7 @@ function Editorpage() {
 
         {/* I/O Pane */}
         <div className="flex flex-grow overflow-hidden h-2/5">
-          <div className="w-1/2 bg-gray-700 p-4 overflow-auto">Input</div>
-          <div className="w-1/2 bg-gray-600 p-4 overflow-auto">Output</div>
+          <div className="w-full bg-gray-600 p-4 overflow-auto">Output</div>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
         if(socketRef.current) {
             socketRef.current.on('code-changed', ({ code, username }) => {
                 // Update the editor content when code changes are received
-                if (code && editorRef.current) {
+                if (editorRef.current) {
                     // const editor = CodeMirror.fromTextArea(editorRef.current);
                     editorRef.current.setValue(code);
                 }
