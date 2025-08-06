@@ -5,7 +5,11 @@ import { initSocket } from '../socket';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+import { FaBars, FaTimes } from "react-icons/fa";
+
 function Editorpage() {
+
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const socketRef = useRef(null) // Placeholder for socket connection
   const location = useLocation();
@@ -14,8 +18,6 @@ function Editorpage() {
   const codeRef = useRef(null); // Placeholder for code editor reference
 
   const [clients, setClients] = useState([]); // State to hold connected clients
-
-
 
   useEffect(() => {
     const init = async () => {
@@ -108,14 +110,24 @@ function Editorpage() {
 
   return (
   <div
-    className="h-screen w-screen flex bg-zinc-950 text-white"
+    className="h-screen w-screen flex bg-zinc-950 text-white relative"
     onMouseMove={handleMouseMove}
     onMouseUp={handleMouseUp}
   >
-    {/* Left Pane */}
-    <div className="w-1/4 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-6 px-4 space-y-4">
+    {/* Mobile Toggle Button */}
+    <button
+      className="md:hidden absolute top-4 left-4 z-50 p-2 rounded bg-zinc-800 hover:bg-zinc-700"
+      onClick={() => setShowSidebar((prev) => !prev)}
+    >
+      {showSidebar ? <FaTimes /> : <FaBars />}
+    </button>
 
-      {/* Logo */}
+    {/* Left Pane */}
+    <div
+      className={`fixed md:static top-0 left-0 h-full z-40 transition-transform duration-300 ease-in-out
+      ${showSidebar ? "translate-x-0" : "-translate-x-full"} 
+      md:translate-x-0 w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-6 px-4 space-y-4`}
+    >
       <img src="/byteroom.png" className="w-32 mb-4" alt="BYTEroom Logo" />
 
       {/* User List */}
@@ -136,21 +148,21 @@ function Editorpage() {
       <div className="flex flex-col w-full space-y-2">
         <button
           onClick={copyRoomId}
-          className="bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-medium transition"
+          className="bg-violet-600 hover:bg-violet-700 py-2 rounded-lg font-medium transition"
         >
           INVITE
         </button>
         <button
           onClick={leave}
-          className="bg-red-600 hover:bg-red-700 py-2 rounded-lg font-medium transition"
+          className="bg-pink-600 hover:bg-pink-700 py-2 rounded-lg font-medium transition"
         >
           LEAVE ROOM
         </button>
       </div>
     </div>
 
-    {/* Right Pane (Editor) */}
-    <div className="flex-1 overflow-hidden">
+    {/* Right Pane */}
+    <div className="flex-1 overflow-hidden ml-0 md:ml-0">
       <Editor
         socketRef={socketRef}
         roomId={roomId}

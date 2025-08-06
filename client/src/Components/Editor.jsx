@@ -98,6 +98,8 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     }
   };
 
+  // Function to run the code
+  // This function will be called when the user clicks the "Run Code" button
     const runCode = async () => {
     const res = await fetch("/run", {
       method: "POST",
@@ -132,7 +134,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
         </select>
         <button
           onClick={runCode}
-          className="ml-auto bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+          className="ml-auto bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
         >
           Run Code
         </button>
@@ -155,7 +157,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       {/* Output Area */}
       <div>
         <label className="text-sm">Output:</label>
-        <pre className="w-full mt-1 p-2 bg-zinc-800 text-green-400 rounded h-32 overflow-auto border border-zinc-700 whitespace-pre-wrap">
+        <pre className="w-full mt-1 p-2 bg-zinc-800 text-purple-400 rounded h-32 overflow-auto border border-zinc-700 whitespace-pre-wrap">
           {output || "Your output will appear here."}
         </pre>
       </div>
