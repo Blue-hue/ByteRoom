@@ -107,71 +107,58 @@ function Editorpage() {
   }
 
   return (
-    <div
-      className="h-screen w-screen flex"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    >
+  <div
+    className="h-screen w-screen flex bg-zinc-950 text-white"
+    onMouseMove={handleMouseMove}
+    onMouseUp={handleMouseUp}
+  >
+    {/* Left Pane */}
+    <div className="w-1/4 bg-zinc-900 border-r border-zinc-800 flex flex-col items-center py-6 px-4 space-y-4">
 
-      {/* Left Pane */}
+      {/* Logo */}
+      <img src="/byteroom.png" className="w-32 mb-4" alt="BYTEroom Logo" />
 
-      <div className="w-1/4 bg-black text-white flex flex-col overflow-auto items-center">
+      {/* User List */}
+      <div className="w-full flex-1 overflow-auto">
+        <h2 className="text-lg font-semibold text-center mb-4 border-b border-zinc-700 pb-2">
+          USERS
+        </h2>
+        <ul className="space-y-3">
+          {clients.map((client) => (
+            <li key={client.socketId}>
+              <Client username={client.username} />
+            </li>
+          ))}
+        </ul>
+      </div>
 
-        {/* image */}
-        <img src="/byteroom.png" />
-
-        {/* user list */}
-
-        <div className="flex-grow overflow-auto whitespace-pre-wrap break-all p-2 flex flex-col items-center">
-          <span className="font-bold text-center m-2">USERS</span>
-          <ul className="mt-4">
-            {clients.map((client) => (
-              <li key={client.socketId} className="mb-2">
-                <Client username = {client.username} />
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Buttons of invite and leave room */}
-
-        <button className="bg-blue-500 text-white p-2 m-2 rounded-t-2xl hover:bg-blue-600 w-35" onClick={copyRoomId}>
+      {/* Buttons */}
+      <div className="flex flex-col w-full space-y-2">
+        <button
+          onClick={copyRoomId}
+          className="bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-medium transition"
+        >
           INVITE
         </button>
-        <button className="bg-red-500 text-white p-2 m-2 rounded-b-2xl hover:bg-red-600 w-35" onClick={leave}>
+        <button
+          onClick={leave}
+          className="bg-red-600 hover:bg-red-700 py-2 rounded-lg font-medium transition"
+        >
           LEAVE ROOM
         </button>
-
-      </div>
-
-      {/* Right Pane */}
-
-      <div className="w-3/4 flex flex-col">
-
-        {/* Editor Pane */}
-      
-        <div
-          ref={editorRef}
-          className="bg-gray-800 text-white p-4 overflow-auto h-3/5"
-          style={{ height: `${editorHeight}px` }}
-        >
-          <Editor socketRef={socketRef} roomId={roomId} onCodeChange = {(code) => (codeRef.current = code) } />
-        </div>
-
-        {/* Resizer line */}
-        <div
-          className="h-2 cursor-row-resize bg-gray-500"
-          onMouseDown={handleMouseDown}
-        ></div>
-
-        {/* I/O Pane */}
-        <div className="flex flex-grow overflow-hidden h-2/5">
-          <div className="w-1/2 bg-gray-700 p-4 overflow-auto">Input</div>
-          <div className="w-1/2 bg-gray-600 p-4 overflow-auto">Output</div>
-        </div>
       </div>
     </div>
-  )
+
+    {/* Right Pane (Editor) */}
+    <div className="flex-1 overflow-hidden">
+      <Editor
+        socketRef={socketRef}
+        roomId={roomId}
+        onCodeChange={(code) => (codeRef.current = code)}
+      />
+    </div>
+  </div>
+);
 }
 
 export default Editorpage
