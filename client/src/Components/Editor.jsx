@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from "react";
 import "codemirror/theme/dracula.css";
 import "codemirror/theme/material.css";
 import "codemirror/addon/selection/active-line.js";
@@ -8,7 +8,7 @@ import "codemirror/addon/edit/closetag.js";
 import "codemirror/addon/edit/matchtags.js";
 import "codemirror/lib/codemirror.css";
 import "codemirror/lib/codemirror.js";
-import CodeMirror, { getMode } from 'codemirror';
+import CodeMirror, { getMode } from "codemirror";
 
 // Importing the necessary CodeMirror modes
 import "codemirror/mode/javascript/javascript";
@@ -16,80 +16,93 @@ import "codemirror/mode/python/python";
 import "codemirror/mode/clike/clike";
 
 function Editor({ socketRef, roomId, onCodeChange }) {
+  const editorRef = useRef(null);
+  const [mylanguage, setMyLanguage] = useState("javascript"); // Default language
+  const [theme, setTheme] = useState("dracula"); // Default theme
+  const [input, setInput] = useState(""); // State for input
+  const [output, setOutput] = useState(""); // State for output
+  const [languages, setLanguages] = useState([]); // State for languages
 
-    const editorRef = useRef(null);
-    const [language, setLanguage] = useState('javascript'); // Default language
-    const [theme, setTheme] = useState('dracula'); // Default theme
-    const [input, setInput] = useState(''); // State for input
-    const [output, setOutput] = useState(''); // State for output
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const res = await fetch("https://emkc.org/api/v2/piston/runtimes");
+        const data = await res.json();
+        setLanguages(data);
+        // if (data.length > 0) setLanguage(data[0].language); // default first
+      } catch (err) {
+        console.error("Failed to fetch languages", err);
+      }
+    };
+    fetchLanguages();
+  }, []);
 
-    useEffect(() => {
-        const init = async () => {
-            const editor = CodeMirror.fromTextArea(
-                document.getElementById("realeditor"),
-                {
-                    mode : getMode(language),
-                    theme: "material",
-                    lineNumbers: true,
-                    lineWrapping: true,
-                    autoCloseBrackets: true,
-                    autoCloseTags: true,
-                }
-            )
-            editorRef.current = editor;
-            editor.setSize(null, "100%");
-
-            editorRef.current.on('change', (instance, changeObj) => {
-                // Handle changes in the editor
-                // console.log('Editor content changed:', instance, changeObj); 
-                const {origin} = changeObj;
-                const code = instance.getValue();
-                onCodeChange(code); // Call the parent function to update the code
-                if(origin !== 'setValue') {
-                    // Emit the change to the server or handle it as needed
-                    // console.log('Code changed:', code);
-
-                    socketRef.current.emit('code-changed', {
-                        roomId,
-                        code,
-                    });
-                }
-            });
-
+  useEffect(() => {
+    const init = async () => {
+      const editor = CodeMirror.fromTextArea(
+        document.getElementById("realeditor"),
+        {
+          mode: getMode(mylanguage),
+          theme: "material",
+          lineNumbers: true,
+          lineWrapping: true,
+          autoCloseBrackets: true,
+          autoCloseTags: true,
         }
-        init();
-    }, [])
+      );
+      editorRef.current = editor;
+      editor.setSize(null, "100%");
 
-    useEffect(() => {
-        if(editorRef.current) {
-            editorRef.current.setOption('mode', getMode(language));
-        }  
-    }, [language]);
-
-    useEffect(() => {
-        if(socketRef.current) {
-            socketRef.current.on('code-changed', ({ code, username }) => {
-                // Update the editor content when code changes are received
-                if (editorRef.current) {
-                    // const editor = CodeMirror.fromTextArea(editorRef.current);
-                    editorRef.current.setValue(code);
-                }
-            });
+      editorRef.current.on("change", (instance, changeObj) => {
+        // Handle changes in the editor
+        // console.log('Editor content changed:', instance, changeObj);
+        const { origin } = changeObj;
+        const code = instance.getValue();
+        onCodeChange(code); // Call the parent function to update the code
+        if (origin !== "setValue") {
+          socketRef.current.emit("code-changed", {
+            roomId,
+            code,
+          });
         }
-        return () => {
-            if(socketRef.current) {
-                socketRef.current.off('code-changed');
-            }
-        }
-    }, [socketRef.current]);
+      });
+    };
+    init();
+  }, []);
 
-    const getMode = (lang) => {
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.setOption("mode", getMode(mylanguage));
+    }
+  }, [mylanguage]);
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.on("code-changed", ({ code, username }) => {
+        // Update the editor content when code changes are received
+        if (editorRef.current) {
+          // const editor = CodeMirror.fromTextArea(editorRef.current);
+          editorRef.current.setValue(code);
+        }
+      });
+    }
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("code-changed");
+      }
+    };
+  }, [socketRef.current]);
+
+  const getMode = (lang) => {
     switch (lang) {
       case "javascript":
+      case "nodejs":
         return { name: "javascript", json: true };
       case "python":
+      case "python3":
         return { name: "python" };
       case "cpp":
+      case "c++":
         return { name: "text/x-c++src" };
       case "java":
         return { name: "text/x-java" };
@@ -98,18 +111,26 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     }
   };
 
-    const runCode = async () => {
-    const res = await fetch("/run", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        language,
-        code: editorRef.current.getValue(),
-        input,
-      }),
-    });
-    const data = await res.json();
-    setOutput(data.output || data.error || "No output");
+  // Function to run the code
+  // This function will be called when the user clicks the "Run Code" button
+  const runCode = async () => {
+    try {
+      const res = await fetch("https://emkc.org/api/v2/piston/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language: mylanguage,
+          version: "*", // latest version
+          files: [{ name: "code.txt", content: editorRef.current.getValue() }],
+          stdin: input,
+        }),
+      });
+      const data = await res.json();
+      setOutput(data.run?.output || data.run?.stderr || "No output");
+    } catch (err) {
+      console.error(err);
+      setOutput("Execution failed");
+    }
   };
 
   return (
@@ -121,18 +142,21 @@ function Editor({ socketRef, roomId, onCodeChange }) {
         </label>
         <select
           id="language"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
+          value={mylanguage}
+          onChange={(e) => setMyLanguage(e.target.value)}
           className="bg-zinc-800 px-2 py-1 rounded border border-zinc-700 text-sm"
         >
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="cpp">C++</option>
-          <option value="java">Java</option>
+
+          {languages.map((lang) => (
+            <option key={`${lang.language + lang.version}`} value={lang.language}>
+              {lang.language} ({lang.version})
+            </option>
+          ))}
+
         </select>
         <button
           onClick={runCode}
-          className="ml-auto bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+          className="ml-auto bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
         >
           Run Code
         </button>
@@ -155,7 +179,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
       {/* Output Area */}
       <div>
         <label className="text-sm">Output:</label>
-        <pre className="w-full mt-1 p-2 bg-zinc-800 text-green-400 rounded h-32 overflow-auto border border-zinc-700 whitespace-pre-wrap">
+        <pre className="w-full mt-1 p-2 bg-zinc-800 text-purple-400 rounded h-32 overflow-auto border border-zinc-700 whitespace-pre-wrap">
           {output || "Your output will appear here."}
         </pre>
       </div>

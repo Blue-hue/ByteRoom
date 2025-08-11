@@ -47,7 +47,7 @@ function Homepage() {
 
   return (
     <div className="flex items-center justify-center h-screen w-screen">
-      <div className="p-1 w-fit flex items-center justify-center bg-indigo-500 rounded-2xl">
+      <div className="p-1 w-fit flex items-center justify-center bg-violet-500 rounded-2xl">
       <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
         <div className="flex flex-col items-center text-center">
 
@@ -76,7 +76,7 @@ function Homepage() {
             onChange={(e) => setRoomId(e.target.value)}
             placeholder="ROOM ID"
             onKeyUp={handleInputEnter}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
 
           <input
@@ -85,14 +85,14 @@ function Homepage() {
             onChange={(e) => setUsername(e.target.value)}
             placeholder="USERNAME"
             onKeyUp={handleInputEnter}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
 
           {/* Join Button */}
 
           <button
             onClick={joinRoom}
-            className="w-full py-2 bg-violet-800 hover:bg-violet-950 text-white font-semibold rounded-md transition-colors duration-300 hover:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full py-2 bg-violet-800 hover:bg-violet-950 text-white font-semibold rounded-md transition-colors duration-300 hover:border-violet-600 focus:outline-none focus:ring-2 focus:ring-pink-500"
           >
             JOIN
           </button>
