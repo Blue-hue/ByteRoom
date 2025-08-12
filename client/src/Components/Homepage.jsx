@@ -54,7 +54,7 @@ function Homepage() {
           {/* LOGO */}
 
           <img
-            src="/public/byteroom.png"
+            src="/byteroom.png"
             alt="Logo"
             className="w-2/5 h-2/5"
           />
