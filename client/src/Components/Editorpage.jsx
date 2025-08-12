@@ -74,25 +74,6 @@ function Editorpage() {
     navigate('/');
   }
 
-  const editorRef = useRef(null)
-  const [editorHeight, setEditorHeight] = useState(null) // initial height in px
-
-  const isDragging = useRef(false)
-
-  const handleMouseDown = () => {
-    isDragging.current = true
-  }
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return
-    const newHeight = e.clientY - editorRef.current.getBoundingClientRect().top
-    setEditorHeight(Math.max(100, newHeight)) // min height 100px
-  }
-
-  const handleMouseUp = () => {
-    isDragging.current = false
-  }
-
   const copyRoomId = async () => {
     try {
       await navigator.clipboard.writeText(roomId);
@@ -111,8 +92,6 @@ function Editorpage() {
   return (
   <div
     className="h-screen w-screen flex bg-zinc-950 text-white relative"
-    onMouseMove={handleMouseMove}
-    onMouseUp={handleMouseUp}
   >
     {/* Mobile Toggle Button */}
     <button
